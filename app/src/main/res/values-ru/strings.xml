@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">НМедиа</string>
     <string name="nmedia_text">НМедиа!</string>
+    <string name="no">no</string>
 </resources>
