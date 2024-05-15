@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.model
 
 data class Post(
     val id: Int,
