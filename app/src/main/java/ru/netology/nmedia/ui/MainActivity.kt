@@ -8,7 +8,6 @@ import androidx.core.view.WindowInsetsCompat
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
-import ru.netology.nmedia.util.toDisplayString
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -24,19 +23,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel.data.observe(this) { post ->
-            binding.avatar.setImageResource(post.authorAvatar)
-            binding.author.text = post.author
-            binding.published.text = post.published
-            binding.content.text = post.content
-            binding.likesCount.text = post.likeCount.toDisplayString()
-            binding.shareCount.text = post.shareCount.toDisplayString()
-            binding.viewCount.text = post.viewCount.toDisplayString()
-            binding.likeIcon.setImageResource(
-                if (post.isLikedByMe) R.drawable.red_heart_icon else R.drawable.heart_icon
-            )
-        }
-        initIcons()
+        initRecycleView()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -44,12 +31,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initIcons() = with(binding) {
-        likeIcon.setOnClickListener {
-            viewModel.like()
-        }
-        shareIcon.setOnClickListener {
-            viewModel.share()
+    private fun initRecycleView() = with(binding) {
+        val adapter = PostsAdapter({ viewModel.likeById(it.id) }, { viewModel.shareById(it.id) })
+        list.adapter = adapter
+        list.setItemAnimator(null)
+        viewModel.data.observe(this@MainActivity) { posts ->
+            adapter.submitList(posts)
         }
     }
 
