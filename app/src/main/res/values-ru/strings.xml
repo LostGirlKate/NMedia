@@ -3,4 +3,12 @@
     <string name="app_name">НМедиа</string>
     <string name="nmedia_text">НМедиа!</string>
     <string name="no">no</string>
+    <string name="remove">Удалить</string>
+    <string name="edit">Редактировать</string>
+    <string name="post_text">Текст поста</string>
+    <string name="error_empty_content">Контент не может быть пустым</string>
+    <string name="edit_title">Редактирование</string>
+    <string name="edit_image">Редактирование</string>
+    <string name="close_edited">Закрыть редактирование</string>
+    <string name="save">Сохранить изменеия</string>
 </resources>

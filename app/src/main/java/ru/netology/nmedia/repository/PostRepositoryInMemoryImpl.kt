@@ -6,7 +6,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 
 class PostRepositoryInMemoryImpl : PostRepository {
-
+    private var nextId = 1
     private var posts = listOf(
         Post(
             id = 9,
@@ -104,6 +104,31 @@ class PostRepositoryInMemoryImpl : PostRepository {
             )
         }
 
+        data.value = posts
+    }
+
+    override fun removeById(id: Int) {
+        posts = posts.filter { it.id != id }
+        data.value = posts
+    }
+
+    override fun save(post: Post) {
+        if (post.id == 0) {
+            posts = listOf(
+                post.copy(
+                    id = nextId++,
+                    author = "Me",
+                    published = "now",
+                    isLikedByMe = false,
+                )
+            ) + posts
+            data.value = posts
+            return
+        }
+
+        posts = posts.map {
+            if (it.id != post.id) it else it.copy(content = post.content)
+        }
         data.value = posts
     }
 }

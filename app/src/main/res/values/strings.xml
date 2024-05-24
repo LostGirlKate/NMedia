@@ -2,4 +2,12 @@
     <string name="app_name">NMedia</string>
     <string name="nmedia_text">NMedia!</string>
     <string name="no">no</string>
+    <string name="remove">Remove</string>
+    <string name="edit">Edit</string>
+    <string name="post_text">Post Text</string>
+    <string name="error_empty_content">Content can\'t be empty</string>
+    <string name="edit_title">Edit Post</string>
+    <string name="edit_image">Edit image</string>
+    <string name="close_edited">Close edited</string>
+    <string name="save">save</string>
 </resources>
