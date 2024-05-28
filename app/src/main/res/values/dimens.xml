@@ -5,6 +5,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="checkbox_padding_start">8dp</dimen>
     <dimen name="common_min_spacing">8dp</dimen>
+    <dimen name="icon_padding">4dp</dimen>
     <dimen name="icon_button_padding">12dp</dimen>
     <dimen name="icon_button_min_size">48dp</dimen>
 </resources>

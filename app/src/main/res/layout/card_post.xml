@@ -93,6 +93,7 @@
         android:checkable="true"
         android:contentDescription="@string/no"
         app:icon="@drawable/heart_icon"
+        app:iconPadding="@dimen/icon_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
         tools:checked="true"
@@ -106,29 +107,24 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/no"
         app:icon="@drawable/share_icon"
+        app:iconPadding="@dimen/icon_padding"
         app:layout_constraintStart_toEndOf="@+id/like_button"
         app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
         tools:text="10" />
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/common_min_spacing"
-        android:contentDescription="@string/no"
-        app:layout_constraintBottom_toBottomOf="@+id/view_count"
-        app:layout_constraintEnd_toStartOf="@id/view_count"
-        app:layout_constraintTop_toTopOf="@+id/view_count"
-        app:srcCompat="@drawable/visibility_icon" />
-
-    <TextView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/view_count"
+        style="@style/Widget.AppTheme.IconButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
+        android:contentDescription="@string/no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier_bottom"
-        tools:text="500K" />
+        app:icon="@drawable/visibility_icon"
+        app:iconPadding="@dimen/icon_padding"
+        tools:text="500K"  />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
