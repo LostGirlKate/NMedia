@@ -44,14 +44,14 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            likesCount.text = post.likeCount.toDisplayString()
-            shareCount.text = post.shareCount.toDisplayString()
+            likeButton.text = post.likeCount.toDisplayString()
+            shareButton.text = post.shareCount.toDisplayString()
             viewCount.text = post.viewCount.toDisplayString()
-            likeIcon.setImageResource(
-                if (post.isLikedByMe) R.drawable.red_heart_icon else R.drawable.heart_icon
-            )
-            likeIcon.setOnClickListener { onInteractionListener.onLike(post) }
-            shareIcon.setOnClickListener { onInteractionListener.onShare(post) }
+//            likeButton.setImageResource(
+//                if (post.isLikedByMe) R.drawable.red_heart_icon else R.drawable.heart_icon
+//            )
+            likeButton.setOnClickListener { onInteractionListener.onLike(post) }
+            shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.post_menu)
