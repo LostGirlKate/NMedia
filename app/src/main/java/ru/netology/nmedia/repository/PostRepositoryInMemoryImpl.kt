@@ -6,7 +6,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 
 class PostRepositoryInMemoryImpl : PostRepository {
-    private var nextId = 1
+    private var nextId = 10
     private var posts = listOf(
         Post(
             id = 9,
@@ -78,7 +78,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
             content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
             published = "21 мая в 18:36",
             isLikedByMe = false,
-            authorAvatar = R.drawable.ic_netology_48dp
+            authorAvatar = R.drawable.ic_netology_48dp,
+            video = "https://youtu.be/tKxX5a376FA?si=JuuW_uE-rGm3eL_a"
         ),
     )
 
@@ -127,7 +128,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
         }
 
         posts = posts.map {
-            if (it.id != post.id) it else it.copy(content = post.content)
+            if (it.id != post.id) it else it.copy(content = post.content, video = post.video)
         }
         data.value = posts
     }

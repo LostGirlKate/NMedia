@@ -45,6 +45,14 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         edited.value = edited.value?.copy(content = text)
     }
 
+    fun changeVideo(video: String) {
+        val text = video.trim()
+        if (edited.value?.video == text) {
+            return
+        }
+        edited.value = edited.value?.copy(video = text)
+    }
+
     fun clearEdited() {
         edited.value = empty
     }

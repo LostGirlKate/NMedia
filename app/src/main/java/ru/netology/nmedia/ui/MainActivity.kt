@@ -1,8 +1,8 @@
 package ru.netology.nmedia.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,7 +11,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
-import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +49,23 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onShare(post: Post) {
+                val data =
+                    if (post.video.isEmpty()) post.content else post.content + "     " + post.video
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, data)
+                    type = "text/plain"
+                }
+
+                val shareIntent =
+                    Intent.createChooser(intent, getString(R.string.chooser_share_post))
+                startActivity(shareIntent)
                 viewModel.shareById(post.id)
+            }
+
+            override fun onPlay(post: Post) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+                startActivity(intent)
             }
         })
         list.adapter = adapter
@@ -58,51 +73,25 @@ class MainActivity : AppCompatActivity() {
         viewModel.data.observe(this@MainActivity) { posts ->
             adapter.submitList(posts)
         }
+        val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
+            if (result == null) {
+                viewModel.clearEdited()
+            }
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result.content)
+            viewModel.changeVideo(result.video)
+            viewModel.save()
+        }
 
         viewModel.edited.observe(this@MainActivity) { post ->
-            if (post.id == 0) {
-                binding.editedTitleGroup.visibility = View.GONE
-                return@observe
-            }
-            with(binding.content) {
-                binding.editedTitleGroup.visibility = View.VISIBLE
-                binding.postEditedTitle.text = post.content
-                requestFocus()
-                setText(post.content)
-            }
+            if (post.id > 0) newPostLauncher.launch(post)
         }
 
-        binding.save.setOnClickListener {
-            with(binding.content) {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        context.getString(R.string.error_empty_content),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
 
-                viewModel.changeContent(text.toString())
-                viewModel.save()
 
-                clearEdited()
-            }
-        }
-
-        binding.closeEdited.setOnClickListener {
-            viewModel.clearEdited()
-            clearEdited()
+        binding.fab.setOnClickListener {
+            newPostLauncher.launch(viewModel.edited.value)
         }
     }
-
-    private fun clearEdited() = with(binding){
-        editedTitleGroup.visibility = View.GONE
-        binding.postEditedTitle.text = ""
-        content.setText("")
-        content.clearFocus()
-        AndroidUtils.hideKeyboard(content)
-    }
-
 
 }

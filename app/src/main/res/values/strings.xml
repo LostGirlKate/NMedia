@@ -9,5 +9,13 @@
     <string name="edit_title">Edit Post</string>
     <string name="edit_image">Edit image</string>
     <string name="close_edited">Close edited</string>
+    <string name="chooser_share_post">Share post</string>
+    <string name="add_post">Add post</string>
     <string name="save">save</string>
+    <string name="title_edit">Editing</string>
+    <string name="title_new_post">New post</string>
+    <string name="video_image">video image</string>
+    <string name="enter_link">enter link</string>
+    <string name="video_link">Video link</string>
+    <string name="post_body">post body.......</string>
 </resources>
