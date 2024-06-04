@@ -94,7 +94,6 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 likeCount = if (!it.isLikedByMe) it.likeCount + 1 else it.likeCount - 1
             )
         }
-
         data.value = posts
     }
 

@@ -10,13 +10,13 @@ import androidx.core.view.WindowInsetsCompat
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.model.Post
-import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
+import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val repository by lazy {
-        PostRepositoryInMemoryImpl()
+        PostRepositoryFileImpl(this)
     }
     private val viewModel: PostViewModel by viewModels<PostViewModel> {
         PostViewModel.PostViewModelFactory(repository = repository)

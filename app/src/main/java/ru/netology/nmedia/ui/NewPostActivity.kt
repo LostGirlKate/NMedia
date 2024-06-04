@@ -37,7 +37,7 @@ class NewPostActivity : AppCompatActivity() {
                 val content = binding.edit.text.toString()
                 val videoLink = binding.linkEdit.text.toString()
                 val editedPost = post?.copy(content = content, video = videoLink)
-                intent.putExtra("post", editedPost)
+                intent.putExtra(POST_KEY_EXTRA, editedPost)
                 setResult(Activity.RESULT_OK, intent)
             }
             finish()
