@@ -19,6 +19,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
     fun onPlay(post: Post) {}
+    fun onPostClick(post: Post) {}
 }
 
 
@@ -55,6 +56,7 @@ class PostViewHolder(
             play.setOnClickListener { onInteractionListener.onPlay(post) }
             likeButton.setOnClickListener { onInteractionListener.onLike(post) }
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
+            postCard.setOnClickListener { onInteractionListener.onPostClick(post) }
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.post_menu)

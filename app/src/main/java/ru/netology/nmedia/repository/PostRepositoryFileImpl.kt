@@ -9,7 +9,7 @@ import ru.netology.nmedia.model.Post
 
 class PostRepositoryFileImpl(
     private val context: Context,
-) : PostRepository  {
+) : PostRepository {
     private val gson = Gson()
     private val type = TypeToken.getParameterized(List::class.java, Post::class.java).type
     private val filename = "posts.json"
@@ -23,11 +23,13 @@ class PostRepositoryFileImpl(
             context.openFileInput(filename).bufferedReader().use {
                 posts = gson.fromJson(it, type)
                 data.value = posts
+                nextId = posts.maxOf { post -> post.id } + 1
             }
         } else {
             sync()
         }
     }
+
     override fun getAll(): LiveData<List<Post>> = data
 
     override fun likeById(id: Int) {

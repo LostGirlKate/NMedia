@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/post_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/common_spacing">
@@ -90,10 +91,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/common_spacing"
+        android:contentDescription="@string/video_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content"
-        android:contentDescription="@string/video_image"
         app:srcCompat="@drawable/video_image" />
 
     <com.google.android.material.button.MaterialButton
@@ -113,8 +114,8 @@
         android:id="@+id/barrier_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
         android:layout_marginTop="@dimen/common_spacing"
+        app:barrierDirection="bottom"
         app:constraint_referenced_ids="video_image" />
 
     <com.google.android.material.button.MaterialButton

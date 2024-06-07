@@ -1,11 +1,12 @@
 package ru.netology.nmedia.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.PostRepositoryFileImpl
 
 private val empty = Post(
     id = 0,
@@ -19,9 +20,12 @@ private val empty = Post(
     authorAvatar = R.drawable.ic_face
 )
 
-class PostViewModel(private val repository: PostRepository) : ViewModel() {
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository: PostRepository = PostRepositoryFileImpl(application)
     val data = repository.getAll()
     val edited = MutableLiveData(empty)
+    private var filterPostId = 0
+
     fun likeById(id: Int) = repository.likeById(id)
     fun shareById(id: Int) = repository.shareById(id)
     fun removeById(id: Int) = repository.removeById(id)
@@ -32,6 +36,12 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         }
         edited.value = empty
     }
+
+    fun viewPost(post: Post) {
+        filterPostId = post.id
+    }
+
+    fun getFilterPostID(): Int = filterPostId
 
     fun edit(post: Post) {
         edited.value = post
@@ -57,17 +67,4 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         edited.value = empty
     }
 
-    class PostViewModelFactory(
-        private val repository: PostRepository
-    ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(PostViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return PostViewModel(
-                    repository
-                ) as T
-            }
-            throw java.lang.IllegalArgumentException("Unknown ViewModelClass")
-        }
-    }
 }
