@@ -4,15 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.R
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryFileImpl
+import ru.netology.nmedia.repository.PostRepositorySQLiteImpl
 
-private val empty = Post(
+private var empty = Post(
     id = 0,
     content = "",
-    author = "",
-    published = "",
+    author = "Me",
+    published = "now",
     shareCount = 0,
     isLikedByMe = false,
     likeCount = 0,
@@ -21,7 +22,9 @@ private val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryFileImpl(application)
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDao
+    )
     val data = repository.getAll()
     val edited = MutableLiveData(empty)
     private var filterPostId = 0
@@ -65,6 +68,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearEdited() {
         edited.value = empty
+    }
+
+    fun saveDraft(content: String, video: String) {
+        empty = empty.copy(content = content, video = video)
+    }
+
+    fun clearDraft() {
+        empty = empty.copy(content = "", video = "")
     }
 
 }
