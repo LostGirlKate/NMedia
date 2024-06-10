@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.util.toDisplayString
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
@@ -33,11 +35,12 @@ class PostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.clearEdited()
-        initRecycleView()
+        initData()
     }
 
-    private fun initRecycleView() = with(binding) {
-        val adapter = PostsAdapter(object : OnInteractionListener {
+    private fun initData() = with(binding) {
+
+        val onInteractionListener = object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
             }
@@ -71,16 +74,55 @@ class PostFragment : Fragment() {
                 startActivity(intent)
             }
 
-        })
-        post.adapter = adapter
-        post.setItemAnimator(null)
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts.filter { it.id == viewModel.getFilterPostID() })
         }
 
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            val post = posts.first { it.id == viewModel.getFilterPostID() }
+            avatar.setImageResource(post.authorAvatar)
+            author.text = post.author
+            published.text = post.published
+            content.text = post.content
+            likeButton.text = post.likeCount.toDisplayString()
+            likeButton.isChecked = post.isLikedByMe
+            shareButton.text = post.shareCount.toDisplayString()
+            viewCount.text = post.viewCount.toDisplayString()
+            videoGroup.visibility = if (post.video.isEmpty()) View.GONE else View.VISIBLE
+
+
+            videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
+            play.setOnClickListener { onInteractionListener.onPlay(post) }
+            likeButton.setOnClickListener { onInteractionListener.onLike(post) }
+            shareButton.setOnClickListener { onInteractionListener.onShare(post) }
+
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.post_menu)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.remove -> {
+                                onInteractionListener.onRemove(post)
+                                true
+                            }
+
+                            R.id.edit -> {
+                                onInteractionListener.onEdit(post)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
+
+
+        }
         viewModel.edited.observe(viewLifecycleOwner) {
             if (it.id > 0) findNavController().navigate(R.id.action_postFragment_to_newPostFragment)
         }
+
+
     }
+
 
 }
