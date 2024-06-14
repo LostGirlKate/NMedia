@@ -2,11 +2,11 @@ package ru.netology.nmedia.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.netology.nmedia.db.PostDao
+import ru.netology.nmedia.db.PostDaoSQLite
 import ru.netology.nmedia.model.Post
 
 class PostRepositorySQLiteImpl(
-    private val dao: PostDao
+    private val dao: PostDaoSQLite
 ) : PostRepository {
     private var posts = emptyList<Post>()
     private val data = MutableLiveData(posts)

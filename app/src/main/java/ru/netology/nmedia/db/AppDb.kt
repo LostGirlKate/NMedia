@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class AppDb private constructor(db: SQLiteDatabase) {
-    val postDao: PostDao = PostDaoImpl(db)
+    val postDao: PostDaoSQLite = PostDaoImpl(db)
 
     companion object {
         @Volatile
