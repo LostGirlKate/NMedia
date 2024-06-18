@@ -19,4 +19,10 @@
     <string name="enter_link">введите ссылку</string>
     <string name="video_link">Ссылка на видео</string>
     <string name="post_body">Введите текст поста</string>
+    <string name="google_play_unavailable">Google Api недоступно</string>
+    <string name="notification_user_liked">Пользователь %1$s лайкнул %2$s\'s post</string>
+    <string name="channel_remote_name">Оповещение</string>
+    <string name="channel_remote_description">Оповещение от сервера</string>
+    <string name="notification_new_post">%1$s опубликовал новый пост:</string>
+    <string name="notification_need_update_app">Необходимо обновить приложение!</string>
 </resources>
