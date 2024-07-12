@@ -35,7 +35,7 @@ class NewPostFragment : Fragment() {
 
         val post = viewModel.edited.value!!
         binding.edit.setText(post.content)
-        binding.linkEdit.setText(post.video)
+        //binding.linkEdit.setText(post.video)
         if (post.id > 0) {
             binding.newPostTitle.text = getString(R.string.title_edit)
         }
@@ -51,8 +51,13 @@ class NewPostFragment : Fragment() {
             viewModel.clearEdited()
             if (post.id == 0) viewModel.clearDraft()
             AndroidUtils.hideKeyboard(requireView())
+        }
+
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            viewModel.loadPosts()
             findNavController().navigateUp()
         }
+
         return binding.root
     }
 

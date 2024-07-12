@@ -1,7 +1,6 @@
 package ru.netology.nmedia.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +24,7 @@ class PostFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentPostBinding.inflate(layoutInflater)
@@ -55,8 +54,8 @@ class PostFragment : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                val data =
-                    if (post.video.isEmpty()) post.content else post.content + "     " + post.video
+                val data = post.content
+                // if (post.video.isEmpty()) post.content else post.content + "     " + post.video
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, data)
@@ -66,63 +65,67 @@ class PostFragment : Fragment() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
-                viewModel.shareById(post.id)
+//                viewModel.shareById(post.id)
             }
 
             override fun onPlay(post: Post) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
-                startActivity(intent)
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+//                startActivity(intent)
             }
 
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val post = posts.first { it.id == viewModel.getFilterPostID() }
-            avatar.setImageResource(post.authorAvatar)
-            author.text = post.author
-            published.text = post.published
-            content.text = post.content
-            likeButton.text = post.likeCount.toDisplayString()
-            likeButton.isChecked = post.isLikedByMe
-            shareButton.text = post.shareCount.toDisplayString()
-            viewCount.text = post.viewCount.toDisplayString()
-            videoGroup.visibility = if (post.video.isEmpty()) View.GONE else View.VISIBLE
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            val post = state.posts.firstOrNull { it.id == viewModel.getFilterPostID() }
+            author.text = post?.author
+            published.text = post?.published.toString()
+            content.text = post?.content
+            likeButton.text = post?.likes?.toDisplayString()
+            likeButton.isChecked = post?.likedByMe == true
+//            shareButton.text = post.shareCount.toDisplayString()
+//            viewCount.text = post.viewCount.toDisplayString()
+            videoGroup.visibility =
+                View.GONE //if (post.video.isEmpty()) View.GONE else View.VISIBLE
 
-
-            videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
-            play.setOnClickListener { onInteractionListener.onPlay(post) }
-            likeButton.setOnClickListener { onInteractionListener.onLike(post) }
-            shareButton.setOnClickListener { onInteractionListener.onShare(post) }
-
+            if (post != null) {
+                videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
+                play.setOnClickListener { onInteractionListener.onPlay(post) }
+                likeButton.setOnClickListener { onInteractionListener.onLike(post) }
+                shareButton.setOnClickListener { onInteractionListener.onShare(post) }
+            }
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.post_menu)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.remove -> {
-                                onInteractionListener.onRemove(post)
+                                if (post != null) {
+                                    onInteractionListener.onRemove(post)
+                                }
                                 true
-                            }
-
-                            R.id.edit -> {
-                                onInteractionListener.onEdit(post)
-                                true
-                            }
-
-                            else -> false
                         }
+
+                        R.id.edit -> {
+                        if (post != null) {
+                            onInteractionListener.onEdit(post)
+                        }
+                        true
                     }
-                }.show()
-            }
 
-
+                        else -> false
+                    }
+                }
+            }.show()
         }
-        viewModel.edited.observe(viewLifecycleOwner) {
-            if (it.id > 0) findNavController().navigate(R.id.action_postFragment_to_newPostFragment)
-        }
-
-
     }
+
+    viewModel.edited.observe(viewLifecycleOwner)
+    {
+        if (it.id > 0) findNavController().navigate(R.id.action_postFragment_to_newPostFragment)
+    }
+
+
+}
 
 
 }

@@ -43,15 +43,15 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
-            avatar.setImageResource(post.authorAvatar)
+//          avatar.setImageResource(post.authorAvatar)
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
-            likeButton.text = post.likeCount.toDisplayString()
-            likeButton.isChecked = post.isLikedByMe
-            shareButton.text = post.shareCount.toDisplayString()
-            viewCount.text = post.viewCount.toDisplayString()
-            videoGroup.visibility = if (post.video.isEmpty()) View.GONE else View.VISIBLE
+            likeButton.text = post.likes.toDisplayString()
+            likeButton.isChecked = post.likedByMe
+//            shareButton.text = post.shareCount.toDisplayString()
+//            viewCount.text = post.viewCount.toDisplayString()
+            videoGroup.visibility = View.GONE// if (post.video.isEmpty()) View.GONE else View.VISIBLE
             videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
             play.setOnClickListener { onInteractionListener.onPlay(post) }
             likeButton.setOnClickListener { onInteractionListener.onLike(post) }

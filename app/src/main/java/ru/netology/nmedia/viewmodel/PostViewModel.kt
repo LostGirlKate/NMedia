@@ -2,40 +2,80 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.netology.nmedia.R
+import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryRoomImpl
-import ru.netology.nmedia.roomdb.RoomDB
+import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.IOException
+import kotlin.concurrent.thread
 
 private var empty = Post(
     id = 0,
     content = "",
     author = "Me",
-    published = "now",
-    shareCount = 0,
-    isLikedByMe = false,
-    likeCount = 0,
-    viewCount = 0,
-    authorAvatar = R.drawable.ic_face
+    published = 0,
+    likedByMe = false,
+    likes = 0
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryRoomImpl(
-        RoomDB.getInstance(application).postDao()
-    )
-    val data = repository.getAll()
+    private val repository: PostRepository = PostRepositoryImpl()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
     val edited = MutableLiveData(empty)
     private var filterPostId = 0
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
 
-    fun likeById(id: Int) = repository.likeById(id)
-    fun shareById(id: Int) = repository.shareById(id)
-    fun removeById(id: Int) = repository.removeById(id)
+    init {
+        loadPosts()
+    }
+
+    fun loadPosts() {
+        thread {
+            // Начинаем загрузку
+            _data.postValue(FeedModel(loading = true))
+            try {
+                // Данные успешно получены
+                val posts = repository.getAll()
+                FeedModel(posts = posts, empty = posts.isEmpty())
+            } catch (e: IOException) {
+                // Получена ошибка
+                FeedModel(error = true)
+            }.also(_data::postValue)
+        }
+    }
+
+
+    fun removeById(id: Int) {
+        thread {
+            // Оптимистичная модель
+            val old = _data.value?.posts.orEmpty()
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                    .filter { it.id != id }
+                )
+            )
+            try {
+                repository.removeById(id)
+            } catch (e: IOException) {
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+        }
+    }
+
 
     fun save() {
         edited.value?.let {
-            repository.save(it)
+            thread {
+                repository.save(it)
+                _postCreated.postValue(Unit)
+            }
         }
         edited.value = empty
     }
@@ -59,11 +99,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun changeVideo(video: String) {
-        val text = video.trim()
-        if (edited.value?.video == text) {
-            return
-        }
-        edited.value = edited.value?.copy(video = text)
+//        val text = video.trim()
+//        if (edited.value?.video == text) {
+//            return
+//        }
+//        edited.value = edited.value?.copy(video = text)
     }
 
     fun clearEdited() {
@@ -71,11 +111,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun saveDraft(content: String, video: String) {
-        empty = empty.copy(content = content, video = video)
+        empty = empty.copy(content = content)
     }
 
     fun clearDraft() {
-        empty = empty.copy(content = "", video = "")
+        empty = empty.copy(content = "")
     }
+
+
+    fun likeById(id: Int) {
+        thread {
+            val isDelete = _data.value!!.posts.firstOrNull { it.id == id }?.likedByMe
+            val newPost = isDelete?.let { repository.likeById(id, it) }
+            if (newPost != null)
+                _data.postValue(
+                    _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                        .map { if (it.id == id) newPost else it }
+                    )
+                )
+        }
+    }
+
+    fun shareById(id: Int) = repository.shareById(id)
 
 }
