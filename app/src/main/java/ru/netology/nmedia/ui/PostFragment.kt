@@ -9,6 +9,8 @@ import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.model.Post
@@ -77,6 +79,7 @@ class PostFragment : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
             val post = state.posts.firstOrNull { it.id == viewModel.getFilterPostID() }
+
             author.text = post?.author
             published.text = post?.published.toString()
             content.text = post?.content
@@ -84,12 +87,30 @@ class PostFragment : Fragment() {
             likeButton.isChecked = post?.likedByMe == true
 //            shareButton.text = post.shareCount.toDisplayString()
 //            viewCount.text = post.viewCount.toDisplayString()
-            videoGroup.visibility =
-                View.GONE //if (post.video.isEmpty()) View.GONE else View.VISIBLE
 
             if (post != null) {
-                videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
-                play.setOnClickListener { onInteractionListener.onPlay(post) }
+                val avatarUrl = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+                Glide.with(avatar)
+                    .load(avatarUrl)
+                    .transform(CircleCrop())
+                    .placeholder(R.drawable.ic_loading)
+                    .error(R.drawable.ic_error)
+                    .timeout(10_000)
+                    .into(avatar)
+                if (post.attachment != null) {
+                    val attachmentUrl = "http://10.0.2.2:9999/images/${post.attachment.url}"
+                    videoGroup.visibility = View.VISIBLE
+                    Glide.with(videoImage)
+                        .load(attachmentUrl)
+                        .placeholder(R.drawable.ic_loading)
+                        .error(R.drawable.ic_error)
+                        .timeout(10_000)
+                        .into(videoImage)
+                } else {
+                    videoGroup.visibility = View.GONE
+                }
+//                videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
+//                play.setOnClickListener { onInteractionListener.onPlay(post) }
                 likeButton.setOnClickListener { onInteractionListener.onLike(post) }
                 shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             }
@@ -103,29 +124,29 @@ class PostFragment : Fragment() {
                                     onInteractionListener.onRemove(post)
                                 }
                                 true
-                        }
+                            }
 
-                        R.id.edit -> {
-                        if (post != null) {
-                            onInteractionListener.onEdit(post)
-                        }
-                        true
-                    }
+                            R.id.edit -> {
+                                if (post != null) {
+                                    onInteractionListener.onEdit(post)
+                                }
+                                true
+                            }
 
-                        else -> false
+                            else -> false
+                        }
                     }
-                }
-            }.show()
+                }.show()
+            }
         }
+
+        viewModel.edited.observe(viewLifecycleOwner)
+        {
+            if (it.id > 0) findNavController().navigate(R.id.action_postFragment_to_newPostFragment)
+        }
+
+
     }
-
-    viewModel.edited.observe(viewLifecycleOwner)
-    {
-        if (it.id > 0) findNavController().navigate(R.id.action_postFragment_to_newPostFragment)
-    }
-
-
-}
 
 
 }

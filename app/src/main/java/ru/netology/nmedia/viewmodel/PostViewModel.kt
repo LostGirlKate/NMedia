@@ -15,6 +15,7 @@ private var empty = Post(
     id = 0,
     content = "",
     author = "Me",
+    authorAvatar = "",
     published = 0,
     likedByMe = false,
     likes = 0
