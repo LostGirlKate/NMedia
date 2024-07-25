@@ -37,6 +37,17 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.usesCleartextTraffic = false
+        }
+        debug {
+            manifestPlaceholders.usesCleartextTraffic = true
+        }
+    }
 }
 
 dependencies {
@@ -57,6 +68,9 @@ dependencies {
     implementation platform(libs.firebase.bom)
     implementation libs.firebase.messaging
     implementation libs.play.services.base
+    implementation libs.okhttp
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.glide
     ksp(libs.androidx.room.compiler)
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
