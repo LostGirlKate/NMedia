@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.util.UIHelper
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
@@ -24,7 +25,7 @@ class FeedFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFeedBinding.inflate(layoutInflater)
         return binding.root
@@ -53,7 +54,7 @@ class FeedFragment : Fragment() {
             override fun onShare(post: Post) {
                 /*val data =
                     if (post.video.isEmpty()) post.content else post.content + "     " + post.video*/
-                val data =post.content
+                val data = post.content
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, data)
@@ -87,6 +88,11 @@ class FeedFragment : Fragment() {
 
         viewModel.edited.observe(viewLifecycleOwner) {
             if (it.id > 0) findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+        }
+
+        viewModel.showErrorWindow.observe(viewLifecycleOwner) {
+            val dialog = UIHelper.alertErrorDialog(requireContext(), it)
+            dialog.show()
         }
 
 

@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.util.load
+import ru.netology.nmedia.util.loadCircleCrop
 import ru.netology.nmedia.util.toDisplayString
 
 
@@ -45,14 +48,7 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
-            val avatarUrl = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
-            Glide.with(avatar)
-                .load(avatarUrl)
-                .transform(CircleCrop())
-                .placeholder(R.drawable.ic_loading)
-                .error(R.drawable.ic_error)
-                .timeout(10_000)
-                .into(avatar)
+            avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
             author.text = post.author
             published.text = post.published.toString()
             content.text = post.content
@@ -62,14 +58,8 @@ class PostViewHolder(
 //            viewCount.text = post.viewCount.toDisplayString()
 
             if (post.attachment != null) {
-                val attachmentUrl = "http://10.0.2.2:9999/images/${post.attachment.url}"
                 videoGroup.visibility = View.VISIBLE
-                Glide.with(videoImage)
-                    .load(attachmentUrl)
-                    .placeholder(R.drawable.ic_loading)
-                    .error(R.drawable.ic_error)
-                    .timeout(10_000)
-                    .into(videoImage)
+                videoImage.load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
             } else {
                 videoGroup.visibility = View.GONE
             }
