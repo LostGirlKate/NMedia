@@ -136,10 +136,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Int) {
         val isDelete = _data.value!!.posts.firstOrNull { it.id == id }?.likedByMe
-        // для инициализаци ошибки
-        val newID = if (id == 5) 10 else id
         isDelete?.let {
-            repository.likeByIdAsync(newID, it,
+            repository.likeByIdAsync(id, it,
                 object : PostRepository.Callback<Post> {
                     override fun onSuccess(posts: Post) {
                         _data.postValue(

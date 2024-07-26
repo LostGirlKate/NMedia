@@ -36,8 +36,7 @@ class PostRepositoryImpl : PostRepository {
             PostsApi.retrofitService.dislikeById(id).enqueue(object : Callback<Post> {
                 override fun onResponse(call: Call<Post>, response: Response<Post>) {
                     if (!response.isSuccessful) {
-                        val jsonObj = JSONObject(response.errorBody()!!.charStream().readText())
-                        callback.onError(RuntimeException(jsonObj.getString("error")))
+                        callback.onError(RuntimeException(response.message()))
                         return
                     }
 
@@ -52,8 +51,7 @@ class PostRepositoryImpl : PostRepository {
             PostsApi.retrofitService.likeById(id).enqueue(object : Callback<Post> {
                 override fun onResponse(call: Call<Post>, response: Response<Post>) {
                     if (!response.isSuccessful) {
-                        val jsonObj = JSONObject(response.errorBody()!!.charStream().readText())
-                        callback.onError(RuntimeException(jsonObj.getString("error")))
+                        callback.onError(RuntimeException(response.message()))
                         return
                     }
 
