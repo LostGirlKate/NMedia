@@ -24,4 +24,8 @@
     <string name="channel_remote_name">Server notifications</string>
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="notification_need_update_app">You need to update app</string>
+    <string name="retry_loading">Retry</string>
+    <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
+    <string name="error_loading">Something went wrong. Try again later</string>
+    <string name="error">Ошибка %1$s. Попробуйте выполнить операцию позднее</string>
 </resources>

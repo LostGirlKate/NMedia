@@ -1,17 +1,18 @@
 package ru.netology.nmedia.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.util.UIHelper
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
@@ -24,7 +25,7 @@ class FeedFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFeedBinding.inflate(layoutInflater)
         return binding.root
@@ -51,8 +52,9 @@ class FeedFragment : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                val data =
-                    if (post.video.isEmpty()) post.content else post.content + "     " + post.video
+                /*val data =
+                    if (post.video.isEmpty()) post.content else post.content + "     " + post.video*/
+                val data = post.content
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, data)
@@ -62,12 +64,12 @@ class FeedFragment : Fragment() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
-                viewModel.shareById(post.id)
+//                viewModel.shareById(post.id)
             }
 
             override fun onPlay(post: Post) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
-                startActivity(intent)
+                /*val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+                startActivity(intent)*/
             }
 
             override fun onPostClick(post: Post) {
@@ -77,18 +79,34 @@ class FeedFragment : Fragment() {
         })
         list.adapter = adapter
         list.setItemAnimator(null)
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            adapter.submitList(posts)
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+            adapter.submitList(state.posts)
+            binding.progress.isVisible = state.loading
+            binding.errorGroup.isVisible = state.error
+            binding.emptyText.isVisible = state.empty
         }
 
         viewModel.edited.observe(viewLifecycleOwner) {
             if (it.id > 0) findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
+        viewModel.showErrorWindow.observe(viewLifecycleOwner) {
+            val dialog = UIHelper.alertErrorDialog(requireContext(), it)
+            dialog.show()
+        }
 
+
+        binding.retryButton.setOnClickListener {
+            viewModel.loadPosts()
+        }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+        }
+
+        binding.SwipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadPosts()
+            binding.SwipeRefreshLayout.isRefreshing = false
         }
     }
 
