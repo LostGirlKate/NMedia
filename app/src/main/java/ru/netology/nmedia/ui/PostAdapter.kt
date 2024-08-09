@@ -7,8 +7,6 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -68,6 +66,11 @@ class PostViewHolder(
             likeButton.setOnClickListener { onInteractionListener.onLike(post) }
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             postCard.setOnClickListener { onInteractionListener.onPostClick(post) }
+            menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
+            menu.isEnabled = !post.localVersion
+            likeButton.isEnabled = !post.localVersion
+            shareButton.isEnabled = !post.localVersion
+
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.post_menu)

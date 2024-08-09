@@ -9,8 +9,10 @@ data class Post(
     val author: String,
     var authorAvatar: String,
     val content: String,
-    val published: Long,
+    val published: String,
     val likedByMe: Boolean = false,
     val likes: Int = 0,
-    val attachment: Attachment? = null
+    val attachment: Attachment? = null,
+    val localVersion: Boolean = false,
+    val localID: Int = 0
 ) : Parcelable

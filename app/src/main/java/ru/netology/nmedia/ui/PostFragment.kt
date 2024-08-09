@@ -113,6 +113,10 @@ class PostFragment : Fragment() {
 //                play.setOnClickListener { onInteractionListener.onPlay(post) }
                 likeButton.setOnClickListener { onInteractionListener.onLike(post) }
                 shareButton.setOnClickListener { onInteractionListener.onShare(post) }
+                menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
+                menu.isEnabled = !post.localVersion
+                likeButton.isEnabled = !post.localVersion
+                shareButton.isEnabled = !post.localVersion
             }
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {

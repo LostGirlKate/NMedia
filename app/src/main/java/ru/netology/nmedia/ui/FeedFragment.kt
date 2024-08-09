@@ -9,8 +9,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.error.ErrorType
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.util.UIHelper
 import ru.netology.nmedia.viewmodel.PostViewModel
@@ -79,10 +81,26 @@ class FeedFragment : Fragment() {
         })
         list.adapter = adapter
         list.setItemAnimator(null)
+        viewModel.dataState.observe(viewLifecycleOwner) { state ->
+            binding.progress.isVisible = state.loading
+            if (state.error) {
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.retry_loading) {
+                        when (state.errorType) {
+                            ErrorType.SAVE_ERROR -> viewModel.saveAfterError()
+                            ErrorType.LIKE_ERROR -> viewModel.likeByIdAfterError()
+                            ErrorType.GET_DATA_ERROR -> viewModel.loadPosts()
+                            ErrorType.DELETE_ERROR -> viewModel.removeByIdAfterError()
+                            null -> viewModel.loadPosts()
+                        }
+
+                    }
+                    .setDuration(8000)
+                    .show()
+            }
+        }
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-            binding.progress.isVisible = state.loading
-            binding.errorGroup.isVisible = state.error
             binding.emptyText.isVisible = state.empty
         }
 
@@ -95,17 +113,12 @@ class FeedFragment : Fragment() {
             dialog.show()
         }
 
-
-        binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
-        }
-
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
         binding.SwipeRefreshLayout.setOnRefreshListener {
-            viewModel.loadPosts()
+            viewModel.refreshPosts()
             binding.SwipeRefreshLayout.isRefreshing = false
         }
     }
