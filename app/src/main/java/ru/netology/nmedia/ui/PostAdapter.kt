@@ -23,6 +23,7 @@ interface OnInteractionListener {
     fun onShare(post: Post) {}
     fun onPlay(post: Post) {}
     fun onPostClick(post: Post) {}
+    fun onLocalPostSend() {}
 }
 
 
@@ -67,29 +68,32 @@ class PostViewHolder(
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             postCard.setOnClickListener { onInteractionListener.onPostClick(post) }
             menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
-            menu.isEnabled = !post.localVersion
             likeButton.isEnabled = !post.localVersion
             shareButton.isEnabled = !post.localVersion
 
             menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.post_menu)
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                onInteractionListener.onRemove(post)
-                                true
-                            }
+                if (!post.localVersion) {
+                    PopupMenu(it.context, it).apply {
+                        inflate(R.menu.post_menu)
+                        setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.remove -> {
+                                    onInteractionListener.onRemove(post)
+                                    true
+                                }
 
-                            R.id.edit -> {
-                                onInteractionListener.onEdit(post)
-                                true
-                            }
+                                R.id.edit -> {
+                                    onInteractionListener.onEdit(post)
+                                    true
+                                }
 
-                            else -> false
+                                else -> false
+                            }
                         }
-                    }
-                }.show()
+                    }.show()
+                } else {
+                    onInteractionListener.onLocalPostSend()
+                }
             }
 
         }

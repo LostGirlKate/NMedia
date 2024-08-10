@@ -53,6 +53,10 @@ class FeedFragment : Fragment() {
                 viewModel.removeById(post.id)
             }
 
+            override fun onLocalPostSend() {
+                viewModel.sendAllLocalPosts()
+            }
+
             override fun onShare(post: Post) {
                 /*val data =
                     if (post.video.isEmpty()) post.content else post.content + "     " + post.video*/
@@ -95,6 +99,7 @@ class FeedFragment : Fragment() {
                         }
 
                     }
+                    .setAnchorView(binding.fab)
                     .setDuration(8000)
                     .show()
             }

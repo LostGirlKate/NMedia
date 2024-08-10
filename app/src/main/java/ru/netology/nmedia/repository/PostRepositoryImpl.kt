@@ -15,6 +15,7 @@ import java.io.IOException
 
 class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override val data = dao.getAll().map(List<PostEntity>::toDto)
+
     override suspend fun getAll() {
         try {
             val response = PostsApi.service.getAll()
@@ -29,6 +30,10 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         } catch (e: Exception) {
             throw UnknownError
         }
+    }
+
+    override suspend fun getLocalPosts(): List<Post> {
+        return dao.getLocalPosts().map { postEntity -> postEntity.toDto() }
     }
 
 
@@ -48,6 +53,10 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         } catch (e: Exception) {
             throw UnknownError
         }
+    }
+
+    override suspend fun rollbackLikeByIdLocal(id: Int) {
+        dao.likeById(id)
     }
 
     override suspend fun removeById(id: Int) {
@@ -82,6 +91,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     }
 
     override suspend fun saveLocal(post: Post): Int {
-        return dao.insert(PostEntity.fromDto(post.copy(localVersion = true))).toInt()
+        val postVersion = if (post.id == 0) post.copy(localVersion = true) else post
+        return dao.insert(PostEntity.fromDto(postVersion)).toInt()
     }
 }

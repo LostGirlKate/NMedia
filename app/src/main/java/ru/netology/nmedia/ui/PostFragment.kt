@@ -50,6 +50,10 @@ class PostFragment : Fragment() {
                 viewModel.likeById(post.id)
             }
 
+            override fun onLocalPostSend() {
+                viewModel.sendAllLocalPosts()
+            }
+
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
                 findNavController().navigateUp()
@@ -114,33 +118,34 @@ class PostFragment : Fragment() {
                 likeButton.setOnClickListener { onInteractionListener.onLike(post) }
                 shareButton.setOnClickListener { onInteractionListener.onShare(post) }
                 menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
-                menu.isEnabled = !post.localVersion
                 likeButton.isEnabled = !post.localVersion
                 shareButton.isEnabled = !post.localVersion
             }
             menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.post_menu)
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                if (post != null) {
-                                    onInteractionListener.onRemove(post)
-                                }
-                                true
-                            }
+                if (post != null) {
+                    if (!post.localVersion) {
+                        PopupMenu(it.context, it).apply {
+                            inflate(R.menu.post_menu)
+                            setOnMenuItemClickListener { item ->
+                                when (item.itemId) {
+                                    R.id.remove -> {
+                                        onInteractionListener.onRemove(post)
+                                        true
+                                    }
 
-                            R.id.edit -> {
-                                if (post != null) {
-                                    onInteractionListener.onEdit(post)
-                                }
-                                true
-                            }
+                                    R.id.edit -> {
+                                        onInteractionListener.onEdit(post)
+                                        true
+                                    }
 
-                            else -> false
-                        }
+                                    else -> false
+                                }
+                            }
+                        }.show()
+                    } else {
+                        onInteractionListener.onLocalPostSend()
                     }
-                }.show()
+                }
             }
         }
 
