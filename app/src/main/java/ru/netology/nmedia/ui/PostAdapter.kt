@@ -24,6 +24,7 @@ interface OnInteractionListener {
     fun onPlay(post: Post) {}
     fun onPostClick(post: Post) {}
     fun onLocalPostSend() {}
+    fun onLocalDelete(post: Post) {}
 }
 
 
@@ -67,9 +68,11 @@ class PostViewHolder(
             likeButton.setOnClickListener { onInteractionListener.onLike(post) }
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
             postCard.setOnClickListener { onInteractionListener.onPostClick(post) }
+            deleteLocal.setOnClickListener { onInteractionListener.onLocalDelete(post) }
             menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
             likeButton.isEnabled = !post.localVersion
             shareButton.isEnabled = !post.localVersion
+            deleteLocal.visibility = if (post.localVersion && !post.blockForDelete && post.isForInsert) View.VISIBLE else View.GONE
 
             menu.setOnClickListener {
                 if (!post.localVersion) {

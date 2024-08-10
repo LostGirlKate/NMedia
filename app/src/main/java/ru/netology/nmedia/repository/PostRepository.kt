@@ -10,6 +10,7 @@ interface PostRepository {
     suspend fun save(post: Post, localId: Int)
     suspend fun saveLocal(post: Post): Int
     suspend fun removeById(id: Int)
+    suspend fun removeByIdLocal(id: Int)
     suspend fun likeById(id: Int, isDelete: Boolean)
     suspend fun rollbackLikeByIdLocal(id: Int)
 }

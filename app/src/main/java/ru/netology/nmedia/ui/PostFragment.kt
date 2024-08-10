@@ -54,6 +54,11 @@ class PostFragment : Fragment() {
                 viewModel.sendAllLocalPosts()
             }
 
+            override fun onLocalDelete(post: Post) {
+                viewModel.deleteLocal(post)
+            }
+
+
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
                 findNavController().navigateUp()
@@ -120,6 +125,7 @@ class PostFragment : Fragment() {
                 menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
                 likeButton.isEnabled = !post.localVersion
                 shareButton.isEnabled = !post.localVersion
+                deleteLocal.visibility = if (post.localVersion && !post.blockForDelete && post.isForInsert) View.VISIBLE else View.GONE
             }
             menu.setOnClickListener {
                 if (post != null) {

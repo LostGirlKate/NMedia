@@ -14,9 +14,22 @@ data class PostEntity(
     val published: String,
     val likedByMe: Boolean,
     val likes: Int = 0,
-    val localVersion: Boolean = false
+    val localVersion: Boolean = false,
+    val isForInsert: Boolean = false,
+    val blockForDelete: Boolean = false,
 ) {
-    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes, localVersion = localVersion)
+    fun toDto() = Post(
+        id,
+        author,
+        authorAvatar,
+        content,
+        published,
+        likedByMe,
+        likes,
+        localVersion = localVersion,
+        isForInsert = isForInsert,
+        blockForDelete = blockForDelete
+    )
 
     companion object {
         fun fromDto(dto: Post) =
@@ -28,7 +41,9 @@ data class PostEntity(
                 dto.published,
                 dto.likedByMe,
                 dto.likes,
-                dto.localVersion
+                dto.localVersion,
+                dto.isForInsert,
+                dto.blockForDelete
             )
 
     }

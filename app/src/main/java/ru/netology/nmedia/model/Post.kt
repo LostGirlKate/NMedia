@@ -14,5 +14,7 @@ data class Post(
     val likes: Int = 0,
     val attachment: Attachment? = null,
     val localVersion: Boolean = false,
-    val localID: Int = 0
+    val localID: Int = 0,
+    val isForInsert: Boolean = false,
+    val blockForDelete: Boolean = false
 ) : Parcelable

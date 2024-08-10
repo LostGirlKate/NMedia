@@ -1,7 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -56,6 +55,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun loadPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)
+            sendAllLocalPosts()
             repository.getAll()
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
@@ -66,6 +66,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun refreshPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(refreshing = true)
+            sendAllLocalPosts()
             repository.getAll()
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
@@ -90,12 +91,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             _postCreated.value = Unit
             viewModelScope.launch {
                 try {
-                    val localId = repository.saveLocal(it)
-                    lastEditedPost = it.copy(localID = localId)
+                    repository.saveLocal(it)
                     edited.value = empty
-                    repository.save(it, localId)
+                    sendAllLocalPosts()
                     _dataState.value = FeedModelState()
-                    lastEditedPost = null
                 } catch (e: Exception) {
                     _dataState.value =
                         FeedModelState(error = true, errorType = ErrorType.SAVE_ERROR)
@@ -105,17 +104,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun saveAfterError() {
-        lastEditedPost?.let {
-            viewModelScope.launch {
-                try {
-                    repository.save(it, it.localID)
-                    _dataState.value = FeedModelState()
-                    lastEditedPost = null
-                } catch (e: Exception) {
-                    lastEditedPost = it
-                    _dataState.value =
-                        FeedModelState(error = true, errorType = ErrorType.SAVE_ERROR)
-                }
+        viewModelScope.launch {
+            try {
+                sendAllLocalPosts()
+                _dataState.value = FeedModelState()
+            } catch (e: Exception) {
+                _dataState.value =
+                    FeedModelState(error = true, errorType = ErrorType.SAVE_ERROR)
             }
         }
     }
@@ -124,7 +119,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         post.let {
             viewModelScope.launch {
                 try {
-                    repository.save(it.copy(id = 0), it.id)
+                    repository.save(if (it.isForInsert) it.copy(id = 0) else it, it.id)
                     _dataState.value = FeedModelState()
                 } catch (e: Exception) {
                     _dataState.value =
@@ -138,8 +133,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val localPosts = repository.getLocalPosts()
             localPosts.forEach {
-               async { sendLocalPost(it) }
+                async { sendLocalPost(it) }
             }
+        }
+    }
+
+    fun deleteLocal(post: Post) {
+        viewModelScope.launch {
+            repository.removeByIdLocal(post.id)
         }
     }
 
@@ -164,6 +165,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 lastEditedId = null
                 lastEditedPost = null
             } catch (e: Exception) {
+                lastEditedId?.let { repository.rollbackLikeByIdLocal(it) }
                 _dataState.value = FeedModelState(error = true, errorType = ErrorType.LIKE_ERROR)
             }
         }

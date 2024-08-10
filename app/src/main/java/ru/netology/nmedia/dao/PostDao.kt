@@ -24,8 +24,12 @@ interface PostDao {
     @Query("DELETE FROM PostEntity WHERE id = :id")
     suspend fun removeById(id: Int)
 
-    @Query("update PostEntity set id = :id, localVersion = 0 WHERE id = :localId")
+    @Query("update PostEntity set id = :id, localVersion = 0, isForInsert = 0 WHERE id = :localId")
     suspend fun updateByLocalId(localId: Int, id: Int)
+
+
+    @Query("update PostEntity set blockForDelete = case when blockForDelete then 0 else 1 end WHERE id = :id")
+    suspend fun blockForDeleteLocal(id: Int)
 
     @Query("SELECT * FROM PostEntity where localVersion = 1")
     suspend fun getLocalPosts(): List<PostEntity>

@@ -29,7 +29,7 @@
         android:maxLines="1"
         android:textColor="@color/font_grey"
         app:layout_constraintBottom_toTopOf="@+id/published"
-        app:layout_constraintEnd_toStartOf="@+id/menu"
+        app:layout_constraintEnd_toStartOf="@+id/delete_local"
         app:layout_constraintStart_toEndOf="@+id/avatar"
         app:layout_constraintTop_toTopOf="@+id/avatar"
         app:layout_constraintVertical_chainStyle="packed"
@@ -46,6 +46,18 @@
         app:layout_constraintStart_toEndOf="@+id/avatar"
         app:layout_constraintTop_toBottomOf="@+id/author"
         tools:text="@sample/posts.json/data/published" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/delete_local"
+        style="@style/Widget.AppTheme.IconButton"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="0dp"
+        android:contentDescription="@string/no"
+        android:visibility="gone"
+        app:icon="@drawable/ic_delete"
+        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintTop_toTopOf="@+id/avatar" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"

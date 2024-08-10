@@ -73,25 +73,37 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         }
     }
 
+    override suspend fun removeByIdLocal(id: Int) {
+        dao.removeById(id)
+    }
+
 
     override suspend fun save(post: Post, localId: Int) {
         try {
+            dao.blockForDeleteLocal(localId)
             val response = PostsApi.service.save(post)
             if (!response.isSuccessful) {
+                dao.blockForDeleteLocal(localId)
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             dao.updateByLocalId(localId, PostEntity.fromDto(body).id)
             dao.insert(PostEntity.fromDto(body))
+            dao.blockForDeleteLocal(localId)
         } catch (e: IOException) {
+            dao.blockForDeleteLocal(localId)
             throw NetworkError
         } catch (e: Exception) {
+            dao.blockForDeleteLocal(localId)
             throw UnknownError
         }
     }
 
     override suspend fun saveLocal(post: Post): Int {
-        val postVersion = if (post.id == 0) post.copy(localVersion = true) else post
+        val postVersion =
+            if (post.id == 0) post.copy(localVersion = true, isForInsert = true) else post.copy(
+                localVersion = true
+            )
         return dao.insert(PostEntity.fromDto(postVersion)).toInt()
     }
 }

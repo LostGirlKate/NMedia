@@ -57,6 +57,10 @@ class FeedFragment : Fragment() {
                 viewModel.sendAllLocalPosts()
             }
 
+            override fun onLocalDelete(post: Post) {
+                viewModel.deleteLocal(post)
+            }
+
             override fun onShare(post: Post) {
                 /*val data =
                     if (post.video.isEmpty()) post.content else post.content + "     " + post.video*/
