@@ -113,6 +113,17 @@ class FeedFragment : Fragment() {
             binding.emptyText.isVisible = state.empty
         }
 
+        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+            newerBar.visibility = if (state == 0) View.GONE else View.VISIBLE
+            showAllPosts.setOnClickListener {
+                viewModel.setAllPostsVisible()
+                newerBar.visibility = View.GONE
+                list.smoothScrollToPosition(0)
+            }
+            println(state)
+        }
+
+
         viewModel.edited.observe(viewLifecycleOwner) {
             if (it.id > 0) findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
@@ -129,6 +140,7 @@ class FeedFragment : Fragment() {
         binding.SwipeRefreshLayout.setOnRefreshListener {
             viewModel.refreshPosts()
             binding.SwipeRefreshLayout.isRefreshing = false
+            list.smoothScrollToPosition(0)
         }
     }
 

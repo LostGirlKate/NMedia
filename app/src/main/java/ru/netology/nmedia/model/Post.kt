@@ -16,5 +16,6 @@ data class Post(
     val localVersion: Boolean = false,
     val localID: Int = 0,
     val isForInsert: Boolean = false,
-    val blockForDelete: Boolean = false
+    val blockForDelete: Boolean = false,
+    val showOnList: Boolean = true
 ) : Parcelable

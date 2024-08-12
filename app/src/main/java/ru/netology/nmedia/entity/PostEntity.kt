@@ -17,6 +17,7 @@ data class PostEntity(
     val localVersion: Boolean = false,
     val isForInsert: Boolean = false,
     val blockForDelete: Boolean = false,
+    val showOnList: Boolean = true
 ) {
     fun toDto() = Post(
         id,
@@ -28,7 +29,8 @@ data class PostEntity(
         likes,
         localVersion = localVersion,
         isForInsert = isForInsert,
-        blockForDelete = blockForDelete
+        blockForDelete = blockForDelete,
+        showOnList = showOnList
     )
 
     companion object {
@@ -43,7 +45,8 @@ data class PostEntity(
                 dto.likes,
                 dto.localVersion,
                 dto.isForInsert,
-                dto.blockForDelete
+                dto.blockForDelete,
+                dto.showOnList
             )
 
     }

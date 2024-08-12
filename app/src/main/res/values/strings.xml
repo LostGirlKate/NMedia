@@ -28,4 +28,5 @@
     <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
     <string name="error_loading">Something went wrong. Try again later</string>
     <string name="error">Ошибка %1$s. Попробуйте выполнить операцию позднее</string>
+    <string name="fresh_posts">свежие записи</string>
 </resources>
