@@ -64,6 +64,11 @@ class PostFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
+            override fun onShowImage(post: Post) {
+                viewModel.viewPost(post)
+                findNavController().navigate(R.id.action_postFragment_to_viewImageFragment)
+            }
+
             override fun onShare(post: Post) {
                 val data = post.content
                 // if (post.video.isEmpty()) post.content else post.content + "     " + post.video
@@ -107,7 +112,7 @@ class PostFragment : Fragment() {
                     .timeout(10_000)
                     .into(avatar)
                 if (post.attachment != null) {
-                    val attachmentUrl = "http://10.0.2.2:9999/images/${post.attachment.url}"
+                    val attachmentUrl = "http://10.0.2.2:9999/media/${post.attachment.url}"
                     videoGroup.visibility = View.VISIBLE
                     Glide.with(videoImage)
                         .load(attachmentUrl)
@@ -118,7 +123,7 @@ class PostFragment : Fragment() {
                 } else {
                     videoGroup.visibility = View.GONE
                 }
-//                videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
+                videoImage.setOnClickListener { onInteractionListener.onShowImage(post) }
 //                play.setOnClickListener { onInteractionListener.onPlay(post) }
                 likeButton.setOnClickListener { onInteractionListener.onLike(post) }
                 shareButton.setOnClickListener { onInteractionListener.onShare(post) }

@@ -2,7 +2,6 @@
     <string name="app_name">NMedia</string>
     <string name="nmedia_text">NMedia!</string>
     <string name="no">no</string>
-    <string name="remove">Remove</string>
     <string name="edit">Edit</string>
     <string name="post_text">Post Text</string>
     <string name="error_empty_content">Content can\'t be empty</string>
@@ -29,4 +28,10 @@
     <string name="error_loading">Something went wrong. Try again later</string>
     <string name="error">Ошибка %1$s. Попробуйте выполнить операцию позднее</string>
     <string name="fresh_posts">свежие записи</string>
+    <string name="description_select_photo">Select photo</string>
+    <string name="description_take_photo">Take photo</string>
+    <string name="description_photo">Photo</string>
+    <string name="remove">Remove</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -3,7 +3,6 @@
     <string name="app_name">НМедиа</string>
     <string name="nmedia_text">НМедиа!</string>
     <string name="no">no</string>
-    <string name="remove">Удалить</string>
     <string name="edit">Редактировать</string>
     <string name="post_text">Текст поста</string>
     <string name="error_empty_content">Контент не может быть пустым</string>
@@ -30,4 +29,8 @@
     <string name="error_loading">Что-то пошло не так. Попробуйте позднее</string>
     <string name="error">Ошибка %1$s. Please, try again later</string>
     <string name="fresh_posts">свежие записи</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
+    <string name="remove">Удалить</string>
 </resources>

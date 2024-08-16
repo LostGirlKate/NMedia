@@ -1,6 +1,7 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,10 +17,13 @@ import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.error.ErrorType
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.model.MediaUpload
+import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.File
 
 private var empty = Post(
     id = 0,
@@ -30,6 +34,8 @@ private var empty = Post(
     likedByMe = false,
     likes = 0
 )
+
+private val noPhoto = PhotoModel()
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositoryImpl(
@@ -59,6 +65,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     val showErrorWindow: LiveData<String>
         get() = _showErrorWindow
+
+    private val _photo = MutableLiveData(noPhoto)
+    val photo: LiveData<PhotoModel>
+        get() = _photo
 
     init {
         loadPosts()
@@ -105,7 +115,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     repository.saveLocal(it)
                     edited.value = empty
-                    sendAllLocalPosts()
+                    when(_photo.value) {
+                        noPhoto -> sendAllLocalPosts()
+                        else -> _photo.value?.file?.let { file ->
+                            repository.saveWithAttachment(it, MediaUpload(file))
+                        }
+                    }
+
+
+                    _photo.value = noPhoto
                     _dataState.value = FeedModelState()
                 } catch (e: Exception) {
                     _dataState.value =
@@ -113,6 +131,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+    }
+
+    fun changePhoto(uri: Uri?, file: File?) {
+        _photo.value = PhotoModel(uri, file)
     }
 
     fun saveAfterError() {
@@ -220,7 +242,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = empty
     }
 
-    fun saveDraft(content: String, video: String) {
+    fun saveDraft(content: String) {
         empty = empty.copy(content = content)
     }
 

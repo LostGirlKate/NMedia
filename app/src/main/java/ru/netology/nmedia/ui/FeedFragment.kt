@@ -82,6 +82,11 @@ class FeedFragment : Fragment() {
                 startActivity(intent)*/
             }
 
+            override fun onShowImage(post: Post) {
+                viewModel.viewPost(post)
+                findNavController().navigate(R.id.action_feedFragment_to_viewImageFragment)
+            }
+
             override fun onPostClick(post: Post) {
                 viewModel.viewPost(post)
                 findNavController().navigate(R.id.action_feedFragment_to_postFragment)

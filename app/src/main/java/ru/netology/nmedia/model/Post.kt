@@ -19,3 +19,4 @@ data class Post(
     val blockForDelete: Boolean = false,
     val showOnList: Boolean = true
 ) : Parcelable
+

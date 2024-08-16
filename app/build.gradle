@@ -79,6 +79,7 @@ dependencies {
     implementation libs.converter.gson
     implementation libs.logging.interceptor
     implementation libs.kotlinx.coroutines.android
+    implementation libs.imagepicker
     ksp(libs.androidx.room.compiler)
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

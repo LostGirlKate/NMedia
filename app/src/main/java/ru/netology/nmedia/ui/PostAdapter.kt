@@ -25,6 +25,7 @@ interface OnInteractionListener {
     fun onPostClick(post: Post) {}
     fun onLocalPostSend() {}
     fun onLocalDelete(post: Post) {}
+    fun onShowImage(post: Post) {}
 }
 
 
@@ -59,11 +60,11 @@ class PostViewHolder(
 
             if (post.attachment != null) {
                 videoGroup.visibility = View.VISIBLE
-                videoImage.load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
+                videoImage.load("${BuildConfig.BASE_URL}/media/${post.attachment.url}")
             } else {
                 videoGroup.visibility = View.GONE
             }
-            //  videoImage.setOnClickListener { onInteractionListener.onPlay(post) }
+              videoImage.setOnClickListener { onInteractionListener.onShowImage(post) }
             //   play.setOnClickListener { onInteractionListener.onPlay(post) }
             likeButton.setOnClickListener { onInteractionListener.onLike(post) }
             shareButton.setOnClickListener { onInteractionListener.onShare(post) }
