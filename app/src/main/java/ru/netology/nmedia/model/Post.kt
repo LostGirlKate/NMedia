@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Post(
     val id: Int,
+    val authorId: Long,
     val author: String,
     var authorAvatar: String,
     val content: String,
@@ -17,6 +18,7 @@ data class Post(
     val localID: Int = 0,
     val isForInsert: Boolean = false,
     val blockForDelete: Boolean = false,
-    val showOnList: Boolean = true
+    val showOnList: Boolean = true,
+    val ownedByMe: Boolean = false,
 ) : Parcelable
 

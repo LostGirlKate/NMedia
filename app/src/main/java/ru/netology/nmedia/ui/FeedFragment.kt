@@ -138,15 +138,28 @@ class FeedFragment : Fragment() {
             dialog.show()
         }
 
+        viewModel.showSignInDialog.observe(viewLifecycleOwner) {
+            if (it) {
+                UIHelper.alertDialog(
+                    requireContext(),
+                    getString(R.string.you_need_sign_in)
+                ) {
+                    findNavController().navigate(R.id.signInFragment)
+                }
+            }
+        }
+
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (viewModel.checkSignIn()) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }
         }
 
-        binding.SwipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshPosts()
-            binding.SwipeRefreshLayout.isRefreshing = false
-            list.smoothScrollToPosition(0)
+            binding.SwipeRefreshLayout.setOnRefreshListener {
+                viewModel.refreshPosts()
+                binding.SwipeRefreshLayout.isRefreshing = false
+                list.smoothScrollToPosition(0)
+            }
         }
+
     }
-
-}

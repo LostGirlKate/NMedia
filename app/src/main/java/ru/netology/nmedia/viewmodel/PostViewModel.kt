@@ -9,10 +9,13 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.error.ErrorType
 import ru.netology.nmedia.model.FeedModel
@@ -28,6 +31,7 @@ import java.io.File
 private var empty = Post(
     id = 0,
     content = "",
+    authorId = 0,
     author = "Me",
     authorAvatar = "",
     published = "",
@@ -41,9 +45,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositoryImpl(
         AppDb.getInstance(context = application).postDao()
     )
-    val data: LiveData<FeedModel> = repository.data
-        .map(::FeedModel)
-        .asLiveData(Dispatchers.Default)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val data: LiveData<FeedModel> = AppAuth.getInstance()
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.data
+                .map { posts ->
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.authorId == myId) },
+                        posts.isEmpty()
+                    )
+                }
+        }.asLiveData(Dispatchers.Default)
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
@@ -58,6 +72,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private var filterPostId = 0
     private val _postCreated = SingleLiveEvent<Unit>()
     private val _showErrorWindow = SingleLiveEvent<String>()
+    private val _showSignInDialog = SingleLiveEvent<Boolean>()
     private var lastEditedPost: Post? = null
     private var lastEditedId: Int? = null
     val postCreated: LiveData<Unit>
@@ -66,12 +81,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val showErrorWindow: LiveData<String>
         get() = _showErrorWindow
 
+    val showSignInDialog: LiveData<Boolean>
+        get() = _showSignInDialog
+
     private val _photo = MutableLiveData(noPhoto)
     val photo: LiveData<PhotoModel>
         get() = _photo
 
     init {
         loadPosts()
+    }
+
+    fun checkSignIn(): Boolean {
+        val checkResult = AppAuth.getInstance().authStateFlow.value.id != 0L
+        _showSignInDialog.value = !checkResult
+        return checkResult
     }
 
     fun loadPosts() = viewModelScope.launch {
@@ -115,7 +139,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     repository.saveLocal(it)
                     edited.value = empty
-                    when(_photo.value) {
+                    when (_photo.value) {
                         noPhoto -> sendAllLocalPosts()
                         else -> _photo.value?.file?.let { file ->
                             repository.saveWithAttachment(it, MediaUpload(file))
@@ -252,6 +276,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun likeById(id: Int) {
+        checkSignIn()
         val isDelete = data.value!!.posts.firstOrNull { it.id == id }?.likedByMe
         viewModelScope.launch {
             try {

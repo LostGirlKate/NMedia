@@ -74,11 +74,12 @@ class PostViewHolder(
             likeButton.isEnabled = !post.localVersion
             shareButton.isEnabled = !post.localVersion
             deleteLocal.visibility = if (post.localVersion && !post.blockForDelete && post.isForInsert) View.VISIBLE else View.GONE
-
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
             menu.setOnClickListener {
                 if (!post.localVersion) {
                     PopupMenu(it.context, it).apply {
                         inflate(R.menu.post_menu)
+                        menu.setGroupVisible(R.id.owned, post.ownedByMe)
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.remove -> {
