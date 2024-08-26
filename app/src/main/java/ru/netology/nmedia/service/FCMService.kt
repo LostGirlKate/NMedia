@@ -39,11 +39,15 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
 
-//        Log.d("Push", message.data["content"] ?: "")
-        val recipientId = message.data["recipientId"] ?: "0"
-        val content = message.data["content"] ?: ""
+     //   Log.d("Push", message.data["content"] ?: "")
+        val pushData = gson.fromJson(
+            message.data[content],
+            PushData::class.java
+        )
+        val recipientId = pushData.recipientId
+        val content = pushData.content ?: ""
         val currentId = AppAuth.getInstance().authStateFlow.value.id
-        if (recipientId == "null") {
+        if (recipientId == null) {
             handleNotification(content)
         } // массовая рассылка
         else {
@@ -167,6 +171,11 @@ class FCMService : FirebaseMessagingService() {
 enum class Action {
     LIKE, NEW_POST
 }
+
+data class PushData(
+    val recipientId: Long?,
+    val content: String?,
+)
 
 data class Like(
     val userId: Long,
