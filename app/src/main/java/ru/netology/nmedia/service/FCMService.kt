@@ -13,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import kotlin.random.Random
 
 
@@ -38,32 +39,60 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
 
-        message.data[action]?.let {
-            try {
-                when (Action.valueOf(it)) {
-                    Action.LIKE -> handleLike(
-                        gson.fromJson(
-                            message.data[content],
-                            Like::class.java
-                        )
-                    )
-
-                    Action.NEW_POST -> handleNewPost(
-                        gson.fromJson(
-                            message.data[content],
-                            NewPost::class.java
-                        )
-                    )
-                }
-            } catch (e: IllegalArgumentException) {
-                handleNeedUpdateApp()
+//        Log.d("Push", message.data["content"] ?: "")
+        val recipientId = message.data["recipientId"] ?: "0"
+        val content = message.data["content"] ?: ""
+        val currentId = AppAuth.getInstance().authStateFlow.value.id
+        if (recipientId == "null") {
+            handleNotification(content)
+        } // массовая рассылка
+        else {
+            val recipientIdLong = recipientId.toLong()
+            if ((recipientIdLong != currentId)) {
+                AppAuth.getInstance().sendPushToken()
+            } else {
+                handleNotification(content)
             }
-
         }
+//        println(message.data["content"])
+//        message.data[action]?.let {
+//            try {
+//                when (Action.valueOf(it)) {
+//                    Action.LIKE -> handleLike(
+//                        gson.fromJson(
+//                            message.data[content],
+//                            Like::class.java
+//                        )
+//                    )
+//
+//                    Action.NEW_POST -> handleNewPost(
+//                        gson.fromJson(
+//                            message.data[content],
+//                            NewPost::class.java
+//                        )
+//                    )
+//                }
+//            } catch (e: IllegalArgumentException) {
+//                handleNeedUpdateApp()
+//            }
+//
+//        }
     }
 
     override fun onNewToken(token: String) {
-        println(token)
+        AppAuth.getInstance().sendPushToken(token)
+    }
+
+    private fun handleNotification(content: String) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(
+                content
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        notify(notification)
     }
 
     private fun handleLike(content: Like) {
