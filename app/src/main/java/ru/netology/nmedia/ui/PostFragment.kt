@@ -7,22 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.util.toDisplayString
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
+@AndroidEntryPoint
 class PostFragment : Fragment() {
+
     private lateinit var binding: FragmentPostBinding
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val viewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,7 +130,8 @@ class PostFragment : Fragment() {
                 menu.setIconResource(if (post.localVersion) R.drawable.ic_local_version else R.drawable.more_vert_icon)
                 likeButton.isEnabled = !post.localVersion
                 shareButton.isEnabled = !post.localVersion
-                deleteLocal.visibility = if (post.localVersion && !post.blockForDelete && post.isForInsert) View.VISIBLE else View.GONE
+                deleteLocal.visibility =
+                    if (post.localVersion && !post.blockForDelete && post.isForInsert) View.VISIBLE else View.GONE
                 menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
             }
             menu.setOnClickListener {

@@ -7,9 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.error.ErrorType
@@ -17,13 +18,11 @@ import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.util.UIHelper
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
 
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    private val viewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -155,11 +154,11 @@ class FeedFragment : Fragment() {
             }
         }
 
-            binding.SwipeRefreshLayout.setOnRefreshListener {
-                viewModel.refreshPosts()
-                binding.SwipeRefreshLayout.isRefreshing = false
-                list.smoothScrollToPosition(0)
-            }
+        binding.SwipeRefreshLayout.setOnRefreshListener {
+            viewModel.refreshPosts()
+            binding.SwipeRefreshLayout.isRefreshing = false
+            list.smoothScrollToPosition(0)
         }
-
     }
+
+}

@@ -1,27 +1,26 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.model.AuthViewState
 import ru.netology.nmedia.model.MediaUpload
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
 import java.io.File
+import javax.inject.Inject
 
 private val noPhoto = PhotoModel()
-
-class SignUpViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryImpl(
-        AppDb.getInstance(context = application).postDao()
-    )
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val repository: PostRepository,
+    private val appAuth: AppAuth,
+) : ViewModel() {
     private val _dataState = MutableLiveData<AuthViewState>()
     val dataState: LiveData<AuthViewState>
         get() = _dataState
@@ -42,7 +41,7 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 _photo.value = noPhoto
                 if (authData != null) {
-                    authData.token?.let { AppAuth.getInstance().setAuth(authData.id, it) }
+                    authData.token?.let { appAuth.setAuth(authData.id, it) }
                     _dataState.value = AuthViewState()
                 } else {
                     _dataState.value = AuthViewState(error = true)
