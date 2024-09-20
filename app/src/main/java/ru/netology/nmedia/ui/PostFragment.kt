@@ -47,7 +47,7 @@ class PostFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id)
+                viewModel.likeById(post)
             }
 
             override fun onLocalPostSend() {
@@ -91,9 +91,7 @@ class PostFragment : Fragment() {
 
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            val post = state.posts.firstOrNull { it.id == viewModel.getFilterPostID() }
-
+        viewModel.singlePost.observe(viewLifecycleOwner) { post ->
             author.text = post?.author
             published.text = post?.published.toString()
             content.text = post?.content

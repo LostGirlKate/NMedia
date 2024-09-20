@@ -81,6 +81,7 @@ dependencies {
     implementation libs.logging.interceptor
     implementation libs.kotlinx.coroutines.android
     implementation libs.imagepicker
+    implementation libs.androidx.paging.runtime
     ksp(libs.androidx.room.compiler)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

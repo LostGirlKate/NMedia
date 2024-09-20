@@ -8,9 +8,15 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.error.ErrorType
@@ -45,7 +51,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id)
+                viewModel.likeById(post)
             }
 
             override fun onRemove(post: Post) {
@@ -112,20 +118,33 @@ class FeedFragment : Fragment() {
                     .show()
             }
         }
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.emptyText.isVisible = state.empty
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.data.collectLatest(adapter::submitData)
+            }
         }
 
-        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
-            newerBar.visibility = if (state == 0) View.GONE else View.VISIBLE
-            showAllPosts.setOnClickListener {
-                viewModel.setAllPostsVisible()
-                newerBar.visibility = View.GONE
-                list.smoothScrollToPosition(0)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                adapter.loadStateFlow.collectLatest { state ->
+                    binding.SwipeRefreshLayout.isRefreshing =
+                        state.refresh is LoadState.Loading ||
+                                state.prepend is LoadState.Loading ||
+                                state.append is LoadState.Loading
+                }
             }
-            println(state)
         }
+
+//        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+//            newerBar.visibility = if (state == 0) View.GONE else View.VISIBLE
+//            showAllPosts.setOnClickListener {
+//                viewModel.setAllPostsVisible()
+//                newerBar.visibility = View.GONE
+//                list.smoothScrollToPosition(0)
+//            }
+//            println(state)
+//        }
 
 
         viewModel.edited.observe(viewLifecycleOwner) {

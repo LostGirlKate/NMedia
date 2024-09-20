@@ -33,8 +33,7 @@ class ViewImageFragment : Fragment() {
     }
 
     private fun initData() {
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            val post = state.posts.firstOrNull { it.id == viewModel.getFilterPostID() }
+        viewModel.singlePost.observe(viewLifecycleOwner) { post ->
             if (post != null) {
                 binding.postImage.load("${BuildConfig.BASE_URL}/media/${post.attachment?.url}")
             }
