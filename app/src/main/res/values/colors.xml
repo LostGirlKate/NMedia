@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="font_grey">#838080</color>
     <color name="hint_color">#AFACAC</color>
+    <color name="divider_color">#ccc</color>
 </resources>

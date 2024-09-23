@@ -3,7 +3,6 @@
     <string name="app_name">НМедиа</string>
     <string name="nmedia_text">НМедиа!</string>
     <string name="no">no</string>
-    <string name="remove">Удалить</string>
     <string name="edit">Редактировать</string>
     <string name="post_text">Текст поста</string>
     <string name="error_empty_content">Контент не может быть пустым</string>
@@ -25,4 +24,26 @@
     <string name="channel_remote_description">Оповещение от сервера</string>
     <string name="notification_new_post">%1$s опубликовал новый пост:</string>
     <string name="notification_need_update_app">Необходимо обновить приложение!</string>
+    <string name="retry_loading">Повторить</string>
+    <string name="empty_posts">Постов нет.\nЕсли создадите новый пост, то он появится здесь</string>
+    <string name="error_loading">Что-то пошло не так. Попробуйте позднее</string>
+    <string name="error">Ошибка %1$s. Please, try again later</string>
+    <string name="error_password_confirm">Пароли не совпадают</string>
+    <string name="fresh_posts">свежие записи</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
+    <string name="remove">Удалить</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="error_auth">Ошибка авторизации проверьте данные</string>
+    <string name="you_need_sign_in">Вы не авторизованы! Авторизоваться?</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="yes">Да</string>
+    <string name="name">Имя</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="error_empty_field">Обязательное заполнение</string>
 </resources>
