@@ -22,6 +22,7 @@ import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.error.ErrorType
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.util.UIHelper
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @AndroidEntryPoint
@@ -29,6 +30,7 @@ class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
 
     private val viewModel: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -132,6 +134,8 @@ class FeedFragment : Fragment() {
                         state.refresh is LoadState.Loading ||
                                 state.prepend is LoadState.Loading ||
                                 state.append is LoadState.Loading
+
+                    list.smoothScrollToPosition(0)
                 }
             }
         }
@@ -172,12 +176,12 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             }
         }
+        binding.SwipeRefreshLayout.setOnRefreshListener(adapter::refresh)
 
-        binding.SwipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshPosts()
-            binding.SwipeRefreshLayout.isRefreshing = false
-            list.smoothScrollToPosition(0)
+        authViewModel.data.observe(viewLifecycleOwner) {
+            adapter.refresh()
         }
+
     }
 
 }
