@@ -51,7 +51,8 @@ class PostRemoteMediator(
                 when (loadType) {
                     LoadType.REFRESH -> {
                         val maxIdInRoom = postRemoteKeyDao.max() ?: 0
-                        postDao.insert(body.filter { it.id > maxIdInRoom}.map(PostEntity.Companion::fromDto))
+                        postDao.insert(body.filter { it.id > maxIdInRoom }
+                            .map(PostEntity.Companion::fromDto))
                         postRemoteKeyDao.insert(
                             listOf(
                                 PostRemoteKeyEntity(
@@ -85,7 +86,7 @@ class PostRemoteMediator(
                     }
                 }
                 if (loadType != LoadType.REFRESH)
-                postDao.insert(body.map(PostEntity.Companion::fromDto))
+                    postDao.insert(body.map(PostEntity.Companion::fromDto))
             }
 
             return MediatorResult.Success(body.isEmpty())
