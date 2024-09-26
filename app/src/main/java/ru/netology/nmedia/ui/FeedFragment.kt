@@ -124,7 +124,7 @@ class FeedFragment : Fragment() {
                             ErrorType.LIKE_ERROR -> viewModel.likeByIdAfterError()
                             ErrorType.GET_DATA_ERROR -> viewModel.loadPosts()
                             ErrorType.DELETE_ERROR -> viewModel.removeByIdAfterError()
-                            null -> viewModel.loadPosts()
+                            null -> {}//viewModel.loadPosts()
                         }
 
                     }

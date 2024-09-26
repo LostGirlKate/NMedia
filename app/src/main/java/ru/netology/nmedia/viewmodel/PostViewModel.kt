@@ -103,25 +103,25 @@ class PostViewModel @Inject constructor(
     }
 
     fun loadPosts() = viewModelScope.launch {
-        try {
-            _dataState.value = FeedModelState(loading = true)
-            sendAllLocalPosts()
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
-        }
+//        try {
+//            _dataState.value = FeedModelState(loading = true)
+//            sendAllLocalPosts()
+//            repository.getAll()
+//            _dataState.value = FeedModelState()
+//        } catch (e: Exception) {
+//            _dataState.value = FeedModelState(error = true)
+//        }
     }
 
     fun refreshPosts() = viewModelScope.launch {
-        try {
-            _dataState.value = FeedModelState(refreshing = true)
-            sendAllLocalPosts()
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
-        }
+//        try {
+//            _dataState.value = FeedModelState(refreshing = true)
+//            sendAllLocalPosts()
+//            repository.getAll()
+//            _dataState.value = FeedModelState()
+//        } catch (e: Exception) {
+//            _dataState.value = FeedModelState(error = true)
+//        }
     }
 
 
