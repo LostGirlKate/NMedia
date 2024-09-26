@@ -1,4 +1,4 @@
-package ru.netology.nmedia.ui
+package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
 import android.view.View

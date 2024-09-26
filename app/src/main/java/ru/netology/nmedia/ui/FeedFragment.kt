@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -18,6 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.OnInteractionListener
+import ru.netology.nmedia.adapter.PagingLoadStateAdapter
+import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.error.ErrorType
 import ru.netology.nmedia.model.Post
@@ -99,10 +101,21 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(R.id.action_feedFragment_to_postFragment)
             }
         })
-        list.adapter = adapter
+        list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+            footer = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+        )
+
         list.setItemAnimator(null)
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
-            binding.progress.isVisible = state.loading
             if (state.error) {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.retry_loading) {
@@ -131,9 +144,7 @@ class FeedFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 adapter.loadStateFlow.collectLatest { state ->
                     binding.SwipeRefreshLayout.isRefreshing =
-                        state.refresh is LoadState.Loading ||
-                                state.prepend is LoadState.Loading ||
-                                state.append is LoadState.Loading
+                        state.refresh is LoadState.Loading
 
                     list.smoothScrollToPosition(0)
                 }

@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.util.toDisplayString
