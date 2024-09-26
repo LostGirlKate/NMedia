@@ -1,9 +1,12 @@
 package ru.netology.nmedia.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,13 +30,18 @@ import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.model.Ad
 import ru.netology.nmedia.model.Attachment
 import ru.netology.nmedia.model.AttachmentType
+import ru.netology.nmedia.model.FeedItem
 import ru.netology.nmedia.model.Media
 import ru.netology.nmedia.model.MediaUpload
 import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.model.TimeSeparator
+import ru.netology.nmedia.util.diffWithNowToString
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.random.Random
 
 
 class PostRepositoryImpl @Inject constructor(
@@ -42,13 +50,39 @@ class PostRepositoryImpl @Inject constructor(
     postRemoteKeyDao: PostRemoteKeyDao,
     appDb: AppDb,
 ) : PostRepository {
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 25),
         remoteMediator = PostRemoteMediator(apiService, dao, postRemoteKeyDao, appDb),
         pagingSourceFactory = dao::pagingSource,
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
+            .insertSeparators { previous, next ->
+                if (previous == null && next != null) {
+                    TimeSeparator(
+                        Random.nextInt(),
+                        next.published.toLong().diffWithNowToString()
+                    )
+                } else
+                    if (previous?.published != null && next != null
+                        && previous.published.toLong()
+                            .diffWithNowToString() != next.published.toLong().diffWithNowToString()
+                    ) {
+                        TimeSeparator(
+                            Random.nextInt(),
+                            next.published.toLong().diffWithNowToString()
+                        )
+                    } else
+                        if (previous?.id?.rem(5) == 0) {
+                            Ad(Random.nextInt(), "figma.jpg")
+                        } else {
+                            null
+                        }
+
+            }
+
+
     }
 
 

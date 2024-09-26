@@ -30,8 +30,8 @@ loggingInterceptor = "5.0.0-alpha.14"
 kotlinxCoroutinesAndroid = "1.9.0-RC"
 imagepicker_version = "2.1"
 hilt = "2.48"
-pagingRuntime = "3.3.2"
-roomPaging = "2.7.0-alpha07"
+pagingRuntime = "3.3.0"
+roomPaging = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
