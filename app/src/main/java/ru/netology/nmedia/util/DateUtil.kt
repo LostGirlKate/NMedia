@@ -1,11 +1,9 @@
 package ru.netology.nmedia.util
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import java.time.Duration
 import java.time.OffsetDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 fun Long.diffWithNowToString(): String {
     val now = OffsetDateTime.now()
     val yesterday = now.minus(Duration.ofDays(1))
